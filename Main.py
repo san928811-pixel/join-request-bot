@@ -1,3 +1,4 @@
+import os
 import logging
 from telegram import (
     Update,
@@ -11,59 +12,78 @@ from telegram.ext import (
     ContextTypes
 )
 
-# 🔐 Yahan apna BOT TOKEN daalo (BotFather se mila hua)
-BOT_TOKEN = " 8436733857:AAEp7Jlgiq3qoKe51lwiICYKdGly3l1TLR8 "  # ← bas yahan token paste karna hai
-
-
-# Logging setup
+# Logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-# --- Aapka channel link aur name ---
-CHANNEL_NAME = "🎬 Full Open Video"
+# BOT_TOKEN must be set in Heroku config vars
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+if not BOT_TOKEN:
+    log.error("BOT_TOKEN not set in environment variables.")
+    raise SystemExit(1)
+
+# --- Your single channel link ---
+CHANNEL_NAME = "Full Open Video"
 CHANNEL_LINK = "https://t.me/+Pf1Ez0N-no8zZmVi"
 
-
 async def auto_approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Auto approve join requests and send DM to user."""
+    """Auto-approve join request and DM the new user with channel link."""
     req: ChatJoinRequest = update.chat_join_request
     user = req.from_user
     chat = req.chat
 
     try:
-        # Approve join request
-        await context.bot.approve_chat_join_request(chat.id, user.id)
-        log.info(f"✅ Approved {user.first_name} ({user.id})")
+        # 1) Approve the join request
+        await context.bot.approve_chat_join_request(chat_id=chat.id, user_id=user.id)
+        log.info("Approved join request: %s (%s)", user.first_name, user.id)
     except Exception as e:
-        log.error(f"❌ Failed to approve {user.first_name}: {e}")
+        log.error("Failed to approve join request for %s (%s): %s", user.first_name, user.id, e)
         return
 
-    # Create DM button
-    button = [[InlineKeyboardButton(CHANNEL_NAME, url=CHANNEL_LINK)]]
-    markup = InlineKeyboardMarkup(button)
+    # Prepare button for DM
+    keyboard = [
+        [InlineKeyboardButton(f"📢 {CHANNEL_NAME}", url=CHANNEL_LINK)]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # DM message
-    message = (
+    # DM message text
+    dm_text = (
         f"👋 Hello {user.first_name}!\n\n"
         f"✅ Your request to join *{chat.title}* has been accepted.\n\n"
-        "👇 Check out our main channel for more exclusive videos:"
+        f"👇 Check out our main channel for all updates:\n"
     )
 
-    # Send DM to user
+    # 2) Try to send DM to the user
     try:
         await context.bot.send_message(
             chat_id=user.id,
-            text=message,
+            text=dm_text,
             parse_mode="Markdown",
-            reply_markup=markup
+            reply_markup=reply_markup
         )
-        log.info(f"💌 Sent DM to {user.first_name}")
+        log.info("Sent DM to user %s (%s)", user.first_name, user.id)
     except Exception as e:
-        log.warning(f"⚠️ Cannot DM {user.first_name}: {e}")
+        log.warning("Could not send DM to %s (%s): %s", user.first_name, user.id, e)
+
+    # --- Optional: Welcome message in group/channel ---
+    try:
+        await context.bot.send_message(
+            chat_id=chat.id,
+            text=(
+                f"🎉 Welcome {user.mention_html()} to <b>{chat.title}</b>! ❤️\n\n"
+                f"👉 Don’t forget to follow our main channel:"
+            ),
+            parse_mode="HTML",
+            reply_markup=reply_markup
+        )
+        log.info("Posted welcome message in %s", chat.title)
+    except Exception as e:
+        log.warning("Could not post welcome message in channel %s: %s", chat.title, e)
 
 
 if __name__ == "__main__":
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(ChatJoinRequestHandler(auto_approve))
-    log.info("🤖 Bot is running and waiting for join requests...")
+
+    log.info("Bot started — waiting for join requests...")
     app.run_polling()

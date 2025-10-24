@@ -22,11 +22,9 @@ if not BOT_TOKEN:
     raise SystemExit(1)
 
 # --- Tumhare channel links ---
-CHANNEL_1_NAME = "Viral Video"
-CHANNEL_1_LINK = "https://t.me/+M1zWzeJgYUFjMGI8"
+CHANNEL_1_NAME = "open video collection"
+CHANNEL_1_LINK = " https://t.me/+Pf1Ez0N-no8zZmVi"
 
-CHANNEL_2_NAME = "All New Video"
-CHANNEL_2_LINK = "https://t.me/+qNjhLVZ_Jh4yYWQ0"
 
 
 async def auto_approve(update: Update, context: ContextTypes.DEFAULT_TYPE):

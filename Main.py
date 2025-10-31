@@ -13,19 +13,40 @@ if not BOT_TOKEN:
     log.error("BOT_TOKEN not found. Set it in Heroku config vars.")
     raise SystemExit(1)
 
-# --- Channel info ---
-CHANNEL_NAME = "Full Open Video"
-CHANNEL_LINK = "https://t.me/+Pf1Ez0N-no8zZmVi"
+# --- Channels info ---
+CHANNELS = [
+    {
+        "name": "Full Open Video",
+        "link": "https://t.me/+Pf1Ez0N-no8zZmVi"
+    },
+    {
+        "name": "All Instagram Viral Election",
+        "link": "https://t.me/+L9DgZJd8-_c3NzZk"
+    },
+    {
+        "name": "All Influencer Viral Video",
+        "link": "https://t.me/+Fd_AU-lNk68wNmFk"
+    },
+    {
+        "name": "All Worldwide Viral Video",
+        "link": "https://t.me/+cYhztcysQz5mZmQ8"
+    }
+]
 
 # --- Custom Welcome Message ---
-WELCOME_TEXT = (
-    "🥵 <b>Welcome🔥🔥 Zone</b>\n\n"
-    "🔥 <b>Full open videos</b> unlock in <b>24 hours</b> — the wait is worth it 😉\n"
-    "💋 Real entertainment, real heat — only for real ones 🥵\n"
-    "👇 <b>Dive in now 👇</b>\n\n"
-    f"👉 <b>{CHANNEL_NAME}</b>\n"
-    f"{CHANNEL_LINK}"
-)
+def make_welcome_text():
+    text = (
+        "🥵 <b>Welcome🔥🔥 Zone</b>\n\n"
+        "🔥 <b>Full open videos</b> unlock in <b>24 hours</b> — the wait is worth it 😉\n"
+        "💋 Real entertainment, real heat — only for real ones 🥵\n"
+        "👇 <b>Dive in now 👇</b>\n\n"
+    )
+    for c in CHANNELS:
+        text += f"👉 <b>{c['name']}</b>\n{c['link']}\n\n"
+    return text.strip()
+
+WELCOME_TEXT = make_welcome_text()
+
 
 async def auto_approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Auto-approve join request and send welcome message in DM."""
@@ -34,7 +55,7 @@ async def auto_approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = req.chat
 
     try:
-        # Approve user automatically
+        # Auto approve join request
         await context.bot.approve_chat_join_request(chat_id=chat.id, user_id=user.id)
         log.info("Approved join request for: %s (%s)", user.first_name, user.id)
     except Exception as e:

@@ -21,7 +21,7 @@ CHANNELS = [
     },
     {
         "name": "All Instagram Viral Election",
-        "link": "https://t.me/+L9DgZJd8-_c3NzZk"
+        "link": "https://t.me/+uZc3flj4tY5mNGU0"
     },
     {
         "name": "All Influencer Viral Video",

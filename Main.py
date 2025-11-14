@@ -21,15 +21,15 @@ CHANNELS = [
     },
     {
         "name": "All Instagram Viral Election",
-        "link": "https://t.me/+L9DgZJd8-_c3NzZk"
+        "link": "https://t.me/+uZc3flj4tY5mNGU0"   # ✅ Updated 2nd link
     },
     {
         "name": "All Influencer Viral Video",
-        "link": "https://t.me/+lF6ShuKVetdjOWI8"   # ✅ Updated link
+        "link": "https://t.me/+lF6ShuKVetdjOWI8"
     },
     {
         "name": "All Worldwide Viral Video",
-        "link": "https://t.me/+cYhztcysQz5mZmQ8"
+        "link": "https://t.me/+nAMxgGoMyp85MDI0"   # ✅ Updated 4th link
     }
 ]
 
@@ -55,14 +55,12 @@ async def auto_approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = req.chat
 
     try:
-        # Auto approve join request
         await context.bot.approve_chat_join_request(chat_id=chat.id, user_id=user.id)
         log.info("Approved join request for: %s (%s)", user.first_name, user.id)
     except Exception as e:
         log.error("Approval failed for %s: %s", user.first_name, e)
         return
 
-    # Send DM to user
     try:
         await context.bot.send_message(
             chat_id=user.id,

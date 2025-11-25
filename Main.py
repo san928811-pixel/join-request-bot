@@ -25,7 +25,7 @@ CHANNELS = [
     },
     {
         "name": "All Influencer Viral Video",
-        "link": "https://t.me/+WE27WM8mCa5mOGNk"
+        "link": "https://t.me/+mVbMpr13bl05MGQ0"
     },
     {
         "name": "All Worldwide Viral Video",

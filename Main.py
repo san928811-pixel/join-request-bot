@@ -17,15 +17,15 @@ if not BOT_TOKEN:
 CHANNELS = [
     {
         "name": "Full Open Video",
-        "link": "https://t.me/+mLUwseIbE7EzYjE0"
+        "link": "https://t.me/+BAGTmVO5270wNGQ0"
     },
     {
         "name": "All Instagram Viral Election",
-        "link": "https://t.me/+pH-MUbN2eFgzMjll"   # ✅ Updated 2nd link
+        "link": "https://t.me/+Ep8Dojni_rw1MWM0"   # ✅ Updated 2nd link
     },
     {
         "name": "All Influencer Viral Video",
-        "link": "https://t.me/+8xP8JUUQ-QMyMTc0"
+        "link": "https://t.me/+qOB6MALOYi82MjA1"
     },
     {
         "name": "All Worldwide Viral Video",

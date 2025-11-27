@@ -29,7 +29,7 @@ CHANNELS = [
     },
     {
         "name": "All Worldwide Viral Video",
-        "link": "https://t.me/+whFI6me89CxmYjE0"   # ✅ Updated 4th link
+        "link": "https://t.me/+8xP8JUUQ-QMyMTc0"   # ✅ Updated 4th link
     }
 ]
 

@@ -21,11 +21,11 @@ CHANNELS = [
     },
     {
         "name": "All Instagram Viral Election",
-        "link": "https://t.me/+mQsqgOIRQrkyOGM0"   # ✅ Updated 2nd link
+        "link": "https://t.me/+RO7d5eNJxns4OTBl"   # ✅ Updated 2nd link
     },
     {
         "name": "All Influencer Viral Video",
-        "link": "https://t.me/+XhDSTP0HwwA0ZjNk"
+        "link": "https://t.me/+mQsqgOIRQrkyOGM0"
     },
     {
         "name": "All Worldwide Viral Video",

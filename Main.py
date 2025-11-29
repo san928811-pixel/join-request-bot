@@ -25,11 +25,11 @@ CHANNELS = [
     },
     {
         "name": "All Influencer Viral Video",
-        "link": "https://t.me/+1wrQ7XFnU4cxNmZl"
+        "link": "https://t.me/+XhDSTP0HwwA0ZjNk"
     },
     {
         "name": "All Worldwide Viral Video",
-        "link": "https://t.me/+qOB6MALOYi82MjA1"   # ✅ Updated 4th link
+        "link": "https://t.me/+czD48RWHszg2MjJk"   # ✅ Updated 4th link
     }
 ]
 

@@ -1,4 +1,3 @@
-import os
 import logging
 from telegram import Update, ChatJoinRequest
 from telegram.ext import ApplicationBuilder, ChatJoinRequestHandler, ContextTypes
@@ -7,11 +6,8 @@ from telegram.ext import ApplicationBuilder, ChatJoinRequestHandler, ContextType
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-# --- BOT TOKEN (Heroku config vars me set karo) ---
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-if not BOT_TOKEN:
-    log.error("BOT_TOKEN not found. Set it in Heroku config vars.")
-    raise SystemExit(1)
+# --- BOT TOKEN (Yahan apna token daalo) ---
+BOT_TOKEN = "8488649116:AAEJFm2x5h6S8UOccENK5kMzv00aU3Q13RU"
 
 # --- Channels info ---
 CHANNELS = [
@@ -21,7 +17,7 @@ CHANNELS = [
     },
     {
         "name": "All Instagram Viral Election",
-        "link": "https://t.me/+4XtYVcHPUGc1ZmE8"   # ✅ Updated 2nd link
+        "link": "https://t.me/+4XtYVcHPUGc1ZmE8"
     },
     {
         "name": "All Influencer Viral Video",
@@ -29,7 +25,7 @@ CHANNELS = [
     },
     {
         "name": "All Worldwide Viral Video",
-        "link": "https://t.me/+ClGJckIFxNI2MWE0"   # ✅ Updated 4th link
+        "link": "https://t.me/+ClGJckIFxNI2MWE0"
     }
 ]
 

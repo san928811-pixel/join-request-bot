@@ -25,7 +25,7 @@ CHANNELS = [
     },
     {
         "name": "All Worldwide Viral Video",
-        "link": "https://t.me/+sBJuAWxsHiIxY2E0"
+        "link": "https://t.me/+-c8CLMBFI6Q4MjE0"
     }
 ]
 

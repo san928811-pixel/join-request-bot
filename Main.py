@@ -53,14 +53,18 @@ def make_welcome_text():
         text += f"👉 <b>{c['name']}</b>\n{c['link']}\n\n"
     return text.strip()
 
+
 WELCOME_TEXT = make_welcome_text()
 
 # ================== HELPERS ==================
 
-def is_admin(uid): return uid in ADMIN_IDS
+def is_admin(uid): 
+    return uid in ADMIN_IDS
+
 
 def save_user(u):
-    if not u: return
+    if not u: 
+        return
     users_col.update_one(
         {"user_id": u.id},
         {"$set": {
@@ -79,7 +83,8 @@ def mark_inactive(uid):
 def get_active_users():
     return [u["user_id"] for u in users_col.find({"active": True})]
 
-def count_active(): return users_col.count_documents({"active": True})
+def count_active(): 
+    return users_col.count_documents({"active": True})
 
 def count_today():
     today = datetime.utcnow().date()
@@ -87,11 +92,15 @@ def count_today():
     end = start + timedelta(days=1)
     return users_col.count_documents({"joined_at": {"$gte": start, "$lt": end}, "active": True})
 
+def count_total():
+    return users_col.count_documents({})
+
 # ================== ADMIN PANEL ==================
 
 admin_keyboard = ReplyKeyboardMarkup(
     [
         ["📊 Active Users", "📈 Today Joined"],
+        ["👥 Total Users"],
         ["📢 Broadcast", "📤 Forward Broadcast"],
         ["🧹 Delete All", "❌ Cancel"],
     ],
@@ -125,12 +134,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not is_admin(update.effective_user.id): return
+    if not is_admin(update.effective_user.id): 
+        return
     await update.message.reply_text("🛠 ADMIN PANEL", reply_markup=admin_keyboard)
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.pop("mode", None)
+    context.user_data.pop("broadcast_msgs", None)
     await update.message.reply_text("❌ Broadcast Mode OFF", reply_markup=admin_keyboard)
 
 
@@ -146,41 +157,62 @@ async def delete_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"🧹 Deleted: {deleted}", reply_markup=admin_keyboard)
 
 
-async def do_broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    msg = update.message
-    users = get_active_users()
+# ============= MULTI-MESSAGE BROADCAST (UP TO 10 MESSAGES) =============
 
-    sent = 0
-    fail = 0
-
-    for uid in users:
-        try:
-            sent_msg = await msg.copy(chat_id=uid)
-            broadcasts_col.insert_one({"chat_id": uid, "message_id": sent_msg.message_id})
-            sent += 1
-        except:
-            fail += 1
-            mark_inactive(uid)
-
-    await msg.reply_text(
-        f"📢 Broadcast Done\n✔ Sent: {sent}\n❌ Failed: {fail}",
-        reply_markup=admin_keyboard,
-    )
-
+BROADCAST_LIMIT = 10
 
 async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message
     u = update.effective_user
     save_user(u)
 
-    if not is_admin(u.id): return
-
-    mode = context.user_data.get("mode")
-
-    if mode == "broadcast":
-        await do_broadcast(update, context)
+    if not is_admin(u.id):
         return
 
+    # ---------- Broadcast Mode ----------
+    if context.user_data.get("mode") == "broadcast":
+
+        if "broadcast_msgs" not in context.user_data:
+            context.user_data["broadcast_msgs"] = []
+
+        # Admin writes DONE → start broadcasting
+        if msg.text and msg.text.lower() == "done":
+            msgs = context.user_data["broadcast_msgs"]
+            context.user_data["mode"] = None
+            context.user_data["broadcast_msgs"] = []
+
+            await msg.reply_text("📢 Broadcasting started…")
+
+            users = get_active_users()
+            sent = 0
+            fail = 0
+
+            for uid in users:
+                try:
+                    for m in msgs:
+                        await m.copy(chat_id=uid)
+                    sent += 1
+                except:
+                    fail += 1
+                    mark_inactive(uid)
+
+            await msg.reply_text(
+                f"📢 Broadcast Completed!\n"
+                f"✔ Sent: {sent}\n"
+                f"❌ Failed: {fail}"
+            )
+            return
+
+        # Save message in queue
+        if len(context.user_data["broadcast_msgs"]) < BROADCAST_LIMIT:
+            context.user_data["broadcast_msgs"].append(msg)
+            remaining = BROADCAST_LIMIT - len(context.user_data["broadcast_msgs"])
+            await msg.reply_text(f"📩 Message Saved! {remaining} left.\nSend more or type DONE.")
+        else:
+            await msg.reply_text("❗ Limit reached (10 messages). Type DONE to start broadcast.")
+        return
+
+    # ---------- Normal Admin Menu ----------
     text = msg.text
 
     if text == "📊 Active Users":
@@ -189,9 +221,18 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text == "📈 Today Joined":
         await msg.reply_text(f"📆 Today Joined: {count_today()}")
 
+    elif text == "👥 Total Users":
+        await msg.reply_text(f"📌 Total Users: {count_total()}")
+
     elif text in ("📢 Broadcast", "📤 Forward Broadcast"):
         context.user_data["mode"] = "broadcast"
-        await msg.reply_text("📢 Broadcast Mode ON", reply_markup=admin_keyboard)
+        context.user_data["broadcast_msgs"] = []
+        await msg.reply_text(
+            "📢 Broadcast Mode ON\n\n"
+            "👉 Send up to 10 messages\n"
+            "👉 Type DONE when finished\n",
+            reply_markup=admin_keyboard,
+        )
 
     elif text == "🧹 Delete All":
         await delete_all(update, context)

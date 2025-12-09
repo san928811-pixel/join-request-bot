@@ -24,7 +24,7 @@ from pymongo.server_api import ServerApi
 # ================== CONFIG ==================
 TOKEN = "8488649116:AAEJFm2x5h6S8UOccENK5kMzv00aU3Q13RU"
 ADMIN_IDS = {7895892794}
-BOT_USERNAME = "Joinerequest_bot"     # <-- FINAL username
+BOT_USERNAME = "Joinerequest_bot"
 
 MONGO_URI = "mongodb+srv://san928811_db_user:7OufFF7Ux8kOBnrO@cluster0.l1kszyc.mongodb.net/?appName=Cluster0"
 
@@ -36,7 +36,6 @@ CHANNELS = [
 ]
 
 # ================== SMALL UNLOCK MESSAGE ==================
-
 UNLOCK_TEXT = (
     "🔓 *Unlock Required*\n\n"
     "👇 Full access पाने के लिए नीचे दिए गए START बटन को दबाएँ!\n\n"
@@ -47,8 +46,7 @@ UNLOCK_TEXT = (
     "*English:* Tap *START NOW* button below 👇"
 )
 
-# ================== WELCOME MESSAGE ==================
-
+# ================== BIG WELCOME MESSAGE ==================
 WELCOME_MAIN = (
     "👋 *Welcome to Viral Zone!*\n\n"
     "🔥 यहाँ आपको Daily Viral, Open & Exclusive Videos मिलेंगी!\n"
@@ -77,7 +75,6 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("BOT")
 
 # ================== HELPERS ==================
-
 def is_admin(uid): return uid in ADMIN_IDS
 
 def save_user(u):
@@ -102,9 +99,7 @@ def get_active_users():
 def mark_inactive(uid):
     users_col.update_one({"user_id": uid}, {"$set": {"active": False}})
 
-
-# ================== JOIN REQUEST HANDLER ==================
-
+# ================== JOIN REQUEST ==================
 async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE):
     req = update.chat_join_request
     user = req.from_user
@@ -114,7 +109,6 @@ async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         return
 
-    # small unlock + big START button
     try:
         await context.bot.send_message(
             chat_id=user.id,
@@ -125,9 +119,7 @@ async def join_request(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         log.warning(f"Cannot DM user {user.id}: {e}")
 
-
-# ================== START COMMAND ==================
-
+# ================== START ==================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     save_user(user)
@@ -135,9 +127,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(WELCOME_MAIN, parse_mode="Markdown")
     await update.message.reply_text(build_links_text(), parse_mode="Markdown")
 
-
 # ================== PANEL ==================
-
 admin_keyboard = ReplyKeyboardMarkup(
     [
         ["📊 Active Users", "📈 Today Joined"],
@@ -148,16 +138,15 @@ admin_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True,
 )
 
-async def panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def panel(update, context):
     if not is_admin(update.effective_user.id): return
     await update.message.reply_text("🛠 *ADMIN PANEL*", parse_mode="Markdown", reply_markup=admin_keyboard)
 
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def cancel(update, context):
     context.user_data.clear()
     await update.message.reply_text("❌ Broadcast Mode OFF", reply_markup=admin_keyboard)
 
-# ================== BROADCAST SYSTEM ==================
-
+# ================== BROADCAST ==================
 async def run_broadcast(context, users, msgs, reply_msg):
     sent, fail = 0, 0
     for uid in users:
@@ -184,13 +173,11 @@ async def delete_all(update, context):
     await update.message.reply_text(f"🧹 Deleted: {deleted}")
 
 # ================== TEXT ROUTER ==================
-
 async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = update.message
     user = update.effective_user
 
     if not is_admin(user.id): return
-
     text = msg.text
 
     if context.user_data.get("mode") == "broadcast":
@@ -199,8 +186,8 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if text.lower() == "done":
             users = get_active_users()
-            context.user_data["mode"] = None
             msgs = context.user_data.pop("msgs", [])
+            context.user_data["mode"] = None
             await msg.reply_text("📢 Broadcasting started…")
             asyncio.create_task(run_broadcast(context, users, msgs, msg))
             return
@@ -209,17 +196,16 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.reply_text("📩 Saved! Type DONE when finished.")
         return
 
-    # Admin Menu
     if text == "📊 Active Users":
-        await msg.reply_text(f"👥 Active Users: {len(get_active_users())}")
+        await msg.reply_text(f"👥 Active: {len(get_active_users())}")
 
     elif text == "📈 Today Joined":
         today = datetime.utcnow().date()
-        count = users_col.count_documents({"joined_at": {"$gte": datetime(today.year,today.month,today.day)}})
-        await msg.reply_text(f"📆 Today Joined: {count}")
+        count = users_col.count_documents({"joined_at": {"$gte": datetime(today.year, today.month, today.day)}})
+        await msg.reply_text(f"📆 Today: {count}")
 
     elif text == "👥 Total Users":
-        await msg.reply_text(f"📌 Total Users: {users_col.count_documents({})}")
+        await msg.reply_text(f"📌 Total: {users_col.count_documents({})}")
 
     elif text in ("📢 Broadcast", "📤 Forward Broadcast"):
         context.user_data["mode"] = "broadcast"
@@ -232,8 +218,7 @@ async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text == "❌ Cancel":
         await cancel(update, context)
 
-
-# ================== RUN BOT ==================
+# ================== RUN ==================
 if __name__ == "__main__":
     app = ApplicationBuilder().token(TOKEN).build()
 

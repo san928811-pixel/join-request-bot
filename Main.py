@@ -24,7 +24,7 @@ from pymongo.server_api import ServerApi
 # ================== CONFIG ==================
 TOKEN = "8572814480:AAHQhbUU58hvehALfbYdHgj5AjPQ48nQHDs"
 ADMIN_IDS = {7895892794}
-BOT_USERNAME = "Joinerequest_bot"
+BOT_USERNAME = "SmartAutoRequest_bot"
 
 MONGO_URI = "mongodb+srv://san928811_db_user:7OufFF7Ux8kOBnrO@cluster0.l1kszyc.mongodb.net/?appName=Cluster0"
 

@@ -22,7 +22,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
 # ================== CONFIG ==================
-TOKEN = "8488649116:AAEJFm2x5h6S8UOccENK5kMzv00aU3Q13RU"
+TOKEN = "8572814480:AAHQhbUU58hvehALfbYdHgj5AjPQ48nQHDs"
 ADMIN_IDS = {7895892794}
 BOT_USERNAME = "Joinerequest_bot"
 

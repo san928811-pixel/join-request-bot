@@ -13,15 +13,15 @@ BOT_TOKEN = "8251879867:AAEp1A4M6h18MX8Y_HJ65wPQ0W9BIDIUwtk"
 CHANNELS = [
     {
         "name": "Full Open Video",
-        "link": "https://t.me/+oM9_I2afhqUzOTE0"
+        "link": "https://t.me/+XyMlmmvTtrc3ZWJk"
     },
     {
         "name": "All Instagram Viral Election",
-        "link": "https://t.me/+sBJuAWxsHiIxY2E0"
+        "link": "https://t.me/+oM9_I2afhqUzOTE0"
     },
     {
         "name": "All Influencer Viral Video",
-        "link": "https://t.me/+XyMlmmvTtrc3ZWJk"
+        "link": "https://t.me/+TdbludWZlVM1YmZk"
     },
     {
         "name": "All Worldwide Viral Video",
